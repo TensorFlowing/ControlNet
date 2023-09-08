@@ -284,11 +284,12 @@ class ControlNet(nn.Module):
     def forward(self, x, hint, timesteps, context, **kwargs):
         t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False)
         emb = self.time_embed(t_emb)
-
+        #Ab: input_hint_block? I think it's time embedding + text embedding (TODO: to be confirmed)
         guided_hint = self.input_hint_block(hint, emb, context)
 
         outs = []
 
+        # Key logic: making the encoder part trainable
         h = x.type(self.dtype)
         for module, zero_conv in zip(self.input_blocks, self.zero_convs):
             if guided_hint is not None:
