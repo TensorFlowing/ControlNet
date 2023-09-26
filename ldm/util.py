@@ -70,6 +70,7 @@ def count_params(model, verbose=False):
 
 
 def instantiate_from_config(config):
+    # I guess this if doens't apply for cldm_v21.yaml since every entry has "target"
     if not "target" in config:
         if config == '__is_first_stage__':
             return None
