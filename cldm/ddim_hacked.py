@@ -52,6 +52,7 @@ class DDIMSampler(object):
         self.register_buffer('ddim_sigmas_for_original_num_steps', sigmas_for_original_sampling_steps)
 
     @torch.no_grad()
+    # called by the main program (e.g. gradio_canny2image.py)
     def sample(self,
                S,
                batch_size,
@@ -178,6 +179,7 @@ class DDIMSampler(object):
         return img, intermediates
 
     @torch.no_grad()
+    # sampling one timestep
     def p_sample_ddim(self, x, c, t, index, repeat_noise=False, use_original_steps=False, quantize_denoised=False,
                       temperature=1., noise_dropout=0., score_corrector=None, corrector_kwargs=None,
                       unconditional_guidance_scale=1., unconditional_conditioning=None,
