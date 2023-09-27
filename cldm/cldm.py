@@ -332,11 +332,15 @@ class ControlLDM(LatentDiffusion):
 
         cond_txt = torch.cat(cond['c_crossattn'], 1)
 
-        if cond['c_concat'] is None:
+        if cond['c_concat'] is None: # no control image, just regular SD
             eps = diffusion_model(x=x_noisy, timesteps=t, context=cond_txt, control=None, only_mid_control=self.only_mid_control)
         else:
+            # a normal controlnet case (with control image)
+            # running control_model (the auxiliary branch) and get a list of control information (to revise the main SD model)
             control = self.control_model(x=x_noisy, hint=torch.cat(cond['c_concat'], 1), timesteps=t, context=cond_txt)
             control = [c * scale for c, scale in zip(control, self.control_scales)]
+            # predicting the noise
+            # I guess the diffusion_model here is the ControlledUnetModel, TODO: to verify
             eps = diffusion_model(x=x_noisy, timesteps=t, context=cond_txt, control=control, only_mid_control=self.only_mid_control)
 
         return eps
